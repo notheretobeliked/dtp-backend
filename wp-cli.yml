@@ -1,3 +1,8 @@
 path: web/wp
 server:
   docroot: web
+
+@staging:
+  ssh: cleavr@dtp-stg.nhtbl.studio:/home/cleavr/dtp-stg.nhtbl.studio/current
+
+@dev: ''
