@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3050aa417dc80981fe40d4a8dfce950a",
+    "content-hash": "9f8e96ea6355dda9cb6a8a28e8a4f55f",
     "packages": [
         {
             "name": "appsero/client",
@@ -7870,6 +7870,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/webp-uploads/"
+        },
+        {
+            "name": "wpackagist-plugin/wpgraphql-smart-cache",
+            "version": "1.3.3",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/wpgraphql-smart-cache/",
+                "reference": "tags/1.3.3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/wpgraphql-smart-cache.1.3.3.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/wpgraphql-smart-cache/"
         },
         {
             "name": "wpackagist-theme/twentytwentyfour",

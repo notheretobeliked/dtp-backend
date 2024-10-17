@@ -7,7 +7,6 @@
 @section('content')
     @while (have_posts())
         @php(the_post())
-        @php(error_log('t'))
         @include('partials.page-header')
         <div class="max-w-screen-md mx-auto">
           <h3 class="text-[2rem] my-10">Import csv files</h3>
@@ -23,6 +22,8 @@
                 <option value="collection">Collection</option>
                 <option value="publisher">Publisher</option>
                 <option value="books">Master CSV (Books)</option> <!-- New option for books -->
+                <option value="update_acf_text_fields">Update ACF Text Fields</option> <!-- New option for updating ACF text fields -->
+
             </select>
             </div>
             <input type="hidden" name="action" value="import_data">

@@ -281,8 +281,10 @@ function import_data()
             if ($import_type === 'books') {
                 // Handle Master CSV (Books)
                 import_books_from_master_csv($handle);
-            } else {
-                // Handle taxonomy imports (People, Collection, Publisher)
+            } elseif ($import_type === 'update_acf_text_fields') {
+                // Handle updating ACF text fields
+                update_acf_text_fields($handle);
+            } else {                // Handle taxonomy imports (People, Collection, Publisher)
                 import_taxonomy_terms($handle, $import_type);
             }
 
@@ -296,6 +298,62 @@ function import_data()
     } else {
         error_log('No file uploaded or import type missing');
         wp_send_json_error(['message' => 'No file uploaded or import type missing.']);
+    }
+}
+
+// Function to update ACF text fields for existing book posts (both English and Arabic)
+function update_acf_text_fields($handle) {
+    $row = 0;
+    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+        if ($row == 0) {
+            error_log('Skipping header row');
+            $row++;
+            continue;
+        }
+
+        $ref = $data[0];  // Assume the first column in the CSV contains the ref (post title)
+
+        // Retrieve the post by its title (which is the 'ref')
+        $english_post = get_page_by_title($ref, OBJECT, 'book');
+
+        error_log("English post id: " .$english_post->ID);
+        if ($english_post) {
+            // Update the English post ACF fields
+            $text_fields = ['exhibition', 'size', 'pp', 'year', 'ref'];
+            $field_data = [
+                'ref'        => $data[0], // Column 1: Ref
+                'exhibition' => $data[36], // Column 2: Exhibition
+                'size'       => $data[33], // Column 3: Size
+                'pp'         => $data[32], // Column 4: Number of pages
+                'year'       => $data[15], // Column 5: Year
+            ];
+
+            foreach ($text_fields as $index => $field) {
+                if (!empty($field_data[$field])) {
+                    update_field($field, $field_data[$field], $english_post->ID);
+                    error_log("field: " . $field .",data: " . $field_data[$field]);
+                }
+            }
+
+            // Find the Arabic post translation
+            $arabic_post_id = apply_filters('wpml_object_id', $english_post->ID, 'book', false, 'ar');
+//          error_log("Arabic post id: " .$arabic_post_id);
+            if ($arabic_post_id) {
+                // Update the Arabic post ACF fields with the same values
+                foreach ($text_fields as $index => $field) {
+                    if (!empty($field_data[$field])) {
+                       update_field($field, $field_data[$field], $arabic_post_id);
+                    }
+                }
+                error_log("Updated ACF text fields for English post ID {$english_post->ID} and Arabic post ID {$arabic_post_id}");
+            } else {
+                error_log("No Arabic translation found for English post ID {$english_post->ID}");
+            }
+        } else {
+            error_log("No English post found for ref {$ref}");
+        }
+
+        $row++;
     }
 }
 
@@ -493,13 +551,6 @@ function set_book_taxonomies($post_id, $data, $language)
         set_multiple_acf_taxonomy_terms($post_id, $page_illustration_name, 'person_page_illustration', 'person');
     }
 
-
-
-    // ACF Taxonomy Field: Cover Design (linked to 'people' taxonomy)
-    $page_illustration_name = $language == 'en' ? $data[26] : $data[27];  // Cover design_EN or Cover design_AR
-    if (!empty($page_illustration_name)) {
-        set_multiple_acf_taxonomy_terms($post_id, $page_illustration_name, 'person_page_illustration', 'person');
-    }
 
 
 
@@ -721,3 +772,144 @@ add_action('widgets_init', function () {
         'id' => 'sidebar-footer',
     ] + $config);
 });
+
+// add_action('acf/init', function() {
+//     sync_arabic_books_fields();
+// });
+
+// function sync_arabic_books_fields() {
+//     // Query to get all Arabic book posts
+//     $args = [
+//         'post_type'      => 'book',
+//         'posts_per_page' => -1,
+//         'lang'           => 'ar', // Fetch only Arabic posts
+//     ];
+
+//     $books = new WP_Query($args);
+
+//     if ($books->have_posts()) {
+//         while ($books->have_posts()) {
+//             $books->the_post();
+//             $arabic_post_id = get_the_ID();
+//             $english_post_id = apply_filters('wpml_original_element_id', null, $arabic_post_id);
+
+//             if ($english_post_id) {
+//                 $english_ref = get_field('ref', $english_post_id);
+
+//                 // Debugging: Output the Arabic and English post IDs and ref
+//                 error_log("Arabic post ID: $arabic_post_id, English post ID: $english_post_id, Ref: $english_ref");
+
+//                 // Step 1: Clear existing ACF fields and taxonomies for Arabic post
+//                 clear_acf_fields_and_taxonomies($arabic_post_id);
+
+//                 // Step 2: Sync ACF text fields from English to Arabic
+//                 $text_fields = ['exhibition', 'size', 'pp', 'year', 'ref'];
+//                 foreach ($text_fields as $field) {
+//                     $value = get_field($field, $english_post_id);
+//                     if ($value) {
+//                         update_field($field, $value, $arabic_post_id);
+//                     }
+//                 }
+
+//                 // Step 3: Sync ACF taxonomy fields from English to Arabic
+//                 $taxonomy_fields = [
+//                     'person_author',
+//                     'person_translation',
+//                     'person_cover_design',
+//                     'person_cover_illustration',
+//                     'person_cover_calligraphy',
+//                     'person_page_design',
+//                     'person_page_calligraphy',
+//                     'person_page_illustration',
+//                     'publisher',
+//                     'collection'
+//                 ];
+
+//                 foreach ($taxonomy_fields as $taxonomy_field) {
+//                     $terms = get_field($taxonomy_field, $english_post_id);
+
+//                     // Handle cases where terms are integers (IDs) or objects (term objects)
+//                     if ($terms && !is_wp_error($terms)) {
+//                         $term_ids = [];
+
+//                         // Check if terms are an array of objects or IDs
+//                         if (is_array($terms)) {
+//                             foreach ($terms as $term) {
+//                                 if (is_object($term) && isset($term->term_id)) {
+//                                     $term_ids[] = $term->term_id;  // If term object, get term_id
+//                                 } elseif (is_int($term)) {
+//                                     $term_ids[] = $term;  // If term ID, directly add it
+//                                 }
+//                             }
+//                         }
+
+//                         if (!empty($term_ids)) {
+//                             update_field($taxonomy_field, $term_ids, $arabic_post_id);
+//                         }
+//                     }
+//                 }
+
+//                 error_log("Synced fields for Arabic post ID $arabic_post_id from English post ID $english_post_id.");
+//             } else {
+//                 error_log("No English translation found for Arabic post ID $arabic_post_id.");
+//             }
+//         }
+//     } else {
+//         error_log('No Arabic book posts found to sync.');
+//     }
+
+//     wp_reset_postdata();
+// }
+
+// // Function to clear existing ACF fields and taxonomies
+// function clear_acf_fields_and_taxonomies($post_id) {
+//     // List of ACF text fields to clear
+//     $acf_text_fields = ['exhibition', 'size', 'pp', 'year', 'ref'];
+    
+//     // List of ACF taxonomy fields to clear
+//     $acf_taxonomy_fields = [
+//         'person_author',
+//         'person_translation',
+//         'person_cover_design',
+//         'person_cover_illustration',
+//         'person_cover_calligraphy',
+//         'person_page_design',
+//         'person_page_calligraphy',
+//         'person_page_illustration',
+//         'publisher',
+//         'collection'
+//     ];
+
+//     // Clear text fields
+//     foreach ($acf_text_fields as $field) {
+//         update_field($field, '', $post_id);  // Set to empty value
+//     }
+
+//     // Clear taxonomy terms
+//     foreach ($acf_taxonomy_fields as $taxonomy_field) {
+//         $taxonomy = get_acf_taxonomy($taxonomy_field); // Function to map ACF field to taxonomy name
+//         if ($taxonomy) {
+//             wp_set_object_terms($post_id, [], $taxonomy);  // Remove all terms from the taxonomy
+//         }
+//     }
+
+//     error_log("Cleared ACF fields and taxonomies for post ID $post_id.");
+// }
+
+// // Function to map ACF field names to their taxonomy
+// function get_acf_taxonomy($acf_field) {
+//     $taxonomy_map = [
+//         'person_author'           => 'person',
+//         'person_translation'      => 'person',
+//         'person_cover_design'     => 'person',
+//         'person_cover_illustration'=> 'person',
+//         'person_cover_calligraphy'=> 'person',
+//         'person_page_design'      => 'person',
+//         'person_page_calligraphy' => 'person',
+//         'person_page_illustration'=> 'person',
+//         'publisher'               => 'publisher',
+//         'collection'              => 'collection'
+//     ];
+
+//     return isset($taxonomy_map[$acf_field]) ? $taxonomy_map[$acf_field] : null;
+// }
