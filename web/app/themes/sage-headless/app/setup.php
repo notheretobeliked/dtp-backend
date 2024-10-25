@@ -25,9 +25,29 @@ add_action('wp_enqueue_scripts', function () {
  *
  * @return void
  */
-add_action('enqueue_block_editor_assets', function () {
-    bundle('editor')->enqueue();
-}, 100);
+add_theme_support('editor-styles');
+add_editor_style( asset( 'editor.css' )->relativePath( get_theme_file_path() ) );
+
+
+/*
+ * Add frontend styles as editor styles.
+ * Must be added by relative path (not remote URI)
+ * (@see https://core.trac.wordpress.org/ticket/55728#ticket).
+ * 
+ * @return void
+ */
+add_action('after_setup_theme', function () {
+    $relAppCssPath = asset('app.css')->relativePath(get_theme_file_path());
+    add_editor_style($relAppCssPath);
+});
+
+add_filter('request', function($vars){
+    if (isset($vars['graphql']) && !empty($vars['name'])) {
+        $vars['suppress_filters'] = true;
+    }
+  
+    return $vars;
+});
 
 /** importer
  * 

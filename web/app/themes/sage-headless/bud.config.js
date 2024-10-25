@@ -16,14 +16,14 @@ export default async (app) => {
   app
     .entry('app', ['@scripts/app', '@styles/app'])
     .entry('editor', ['@scripts/editor', '@styles/editor'])
-    .assets(['images']);
+    .assets(['images', 'fonts']);
 
   /**
    * Set public path
    *
    * @see {@link https://bud.js.org/reference/bud.setPublicPath}
    */
-  app.setPublicPath('/app/themes/sage/public/');
+  app.setPublicPath('/app/themes/sage-headless/public/');
 
   /**
    * Development server settings
@@ -70,8 +70,15 @@ export default async (app) => {
         padding: true,
         units: ['px', '%', 'em', 'rem', 'vw', 'vh'],
       },
+      layout: {
+        contentSize: '908px',
+        wideSize: '1380px',
+      },
       typography: {
         customFontSize: false,
+        customLineHeight: false,
+        dropCap: false,
+        fontSizes: [],
       },
     })
     .useTailwindColors()
