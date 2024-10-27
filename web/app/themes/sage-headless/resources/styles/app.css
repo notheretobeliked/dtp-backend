@@ -12,8 +12,29 @@
   border-color: theme('borderColor.DEFAULT', currentColor);
 }
 
-h2,
-h3,
+p,
+li,
+ul,
+ol {
+  @apply font-martina text-base;
+}
+
+p {
+  @apply mb-3;
+}
+
+h1 {
+  @apply font-boogy text-2xl mb-5;
+}
+
+h2 {
+  @apply font-martina text-base pb-1 border-b border-black mb-3;
+}
+
+h3 {
+  @apply font-martina text-base uppercase tracking-wider mb-3;
+}
+
 h4 {
-    @apply font-boogy text-2xl;
+  @apply font-martina text-xs uppercase tracking-widest mb-1;
 }
