@@ -26,7 +26,7 @@ add_action('wp_enqueue_scripts', function () {
  * @return void
  */
 add_theme_support('editor-styles');
-add_editor_style( asset( 'editor.css' )->relativePath( get_theme_file_path() ) );
+add_editor_style(asset('editor.css')->relativePath(get_theme_file_path()));
 
 
 /*
@@ -41,11 +41,11 @@ add_action('after_setup_theme', function () {
     add_editor_style($relAppCssPath);
 });
 
-add_filter('request', function($vars){
+add_filter('request', function ($vars) {
     if (isset($vars['graphql']) && !empty($vars['name'])) {
         $vars['suppress_filters'] = true;
     }
-  
+
     return $vars;
 });
 
@@ -322,7 +322,8 @@ function import_data()
 }
 
 // Function to update ACF text fields for existing book posts (both English and Arabic)
-function update_acf_text_fields($handle) {
+function update_acf_text_fields($handle)
+{
     $row = 0;
     while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
         if ($row == 0) {
@@ -336,7 +337,7 @@ function update_acf_text_fields($handle) {
         // Retrieve the post by its title (which is the 'ref')
         $english_post = get_page_by_title($ref, OBJECT, 'book');
 
-        error_log("English post id: " .$english_post->ID);
+        error_log("English post id: " . $english_post->ID);
         if ($english_post) {
             // Update the English post ACF fields
             $text_fields = ['exhibition', 'size', 'pp', 'year', 'ref'];
@@ -351,18 +352,18 @@ function update_acf_text_fields($handle) {
             foreach ($text_fields as $index => $field) {
                 if (!empty($field_data[$field])) {
                     update_field($field, $field_data[$field], $english_post->ID);
-                    error_log("field: " . $field .",data: " . $field_data[$field]);
+                    error_log("field: " . $field . ",data: " . $field_data[$field]);
                 }
             }
 
             // Find the Arabic post translation
             $arabic_post_id = apply_filters('wpml_object_id', $english_post->ID, 'book', false, 'ar');
-//          error_log("Arabic post id: " .$arabic_post_id);
+            //          error_log("Arabic post id: " .$arabic_post_id);
             if ($arabic_post_id) {
                 // Update the Arabic post ACF fields with the same values
                 foreach ($text_fields as $index => $field) {
                     if (!empty($field_data[$field])) {
-                       update_field($field, $field_data[$field], $arabic_post_id);
+                        update_field($field, $field_data[$field], $arabic_post_id);
                     }
                 }
                 error_log("Updated ACF text fields for English post ID {$english_post->ID} and Arabic post ID {$arabic_post_id}");
@@ -656,6 +657,85 @@ function set_wpml_translation($post_id, $english_post_id, $language)
     error_log('Linked Arabic post ID ' . $post_id . ' as translation of English post ID ' . $english_post_id);
 }
 
+add_action('admin_menu', function () {
+    add_options_page(
+        'Vercel Deploy Hook',
+        'Vercel Deploy Hook',
+        'manage_options',
+        'vercel-deploy-hook',
+        function () {
+?>
+        <div class="wrap">
+            <h1>Vercel Deploy Hook</h1>
+            <form method="post" action="options.php">
+                <?php
+                settings_fields('vercel_deploy_hook');
+                do_settings_sections('vercel_deploy_hook');
+                submit_button();
+                ?>
+            </form>
+        </div>
+<?php
+        }
+    );
+});
+
+add_action('admin_init', function () {
+    register_setting('vercel_deploy_hook', 'vercel_deploy_hook_url');
+
+    add_settings_section(
+        'vercel_deploy_hook_section',
+        'Vercel Deploy Hook Settings',
+        null,
+        'vercel_deploy_hook'
+    );
+
+    add_settings_field(
+        'vercel_deploy_hook_url',
+        'Deploy Hook URL',
+        function () {
+            $url = get_option('vercel_deploy_hook_url');
+            echo "<input type='text' name='vercel_deploy_hook_url' value='" . esc_attr($url) . "' class='regular-text' />";
+        },
+        'vercel_deploy_hook',
+        'vercel_deploy_hook_section'
+    );
+});
+
+add_action('admin_bar_menu', function($wp_admin_bar) {
+    if (!current_user_can('edit_posts')) {
+        return;
+    }
+
+    $wp_admin_bar->add_node([
+        'id'    => 'vercel_deploy',
+        'title' => 'Update content on website',
+        'href'  => '#',
+        'meta'  => [
+            'onclick' => 'triggerVercelDeploy()',
+        ],
+    ]);
+}, 100);
+
+add_action('admin_footer', function() {
+    ?>
+    <script type="text/javascript">
+        function triggerVercelDeploy() {
+            const url = '<?php echo esc_js(get_option('vercel_deploy_hook_url')); ?>';
+            if (!url) {
+                alert('Vercel deploy hook URL is not set.');
+                return;
+            }
+
+            fetch(url, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => alert('Content is updating. Please wait for a minute or two before reloading the DTP webpage.'))
+                .catch(error => alert('Error triggering deploy: ' + error));
+        }
+    </script>
+    <?php
+});
+
 
 /**
  * Register the initial theme setup.
@@ -712,7 +792,7 @@ add_action('after_setup_theme', function () {
 
     add_filter('big_image_size_threshold', '__return_false');
 
-    add_action('init', function() {
+    add_action('init', function () {
         add_image_size('x_large', 0, 2000, 0); // 9999 means unlimited width
     });
 
