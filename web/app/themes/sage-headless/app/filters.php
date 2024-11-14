@@ -20,8 +20,3 @@ add_filter( 'graphql_connection_max_query_amount', function( $amount, $source, $
     $amount = 1000; // increase post limit to 1000
     return $amount;
 }, 10, 5 );
-
-add_action('init', function() {
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Headers: *");
-});

@@ -96,33 +96,43 @@
       "fontSizes": [
         {
           "name": "xs",
-          "size": ".875rem",
+          "size": ".5rem",
           "slug": "xs"
         },
         {
           "name": "sm",
-          "size": "1rem",
+          "size": "0.875rem",
           "slug": "sm"
         },
         {
           "name": "base",
-          "size": "1.25rem",
+          "size": "1.063rem",
           "slug": "base"
         },
         {
           "name": "lg",
-          "size": "1.75rem",
+          "size": "1.5rem",
           "slug": "lg"
         },
         {
           "name": "xl",
-          "size": "2.875rem",
+          "size": "2.5rem",
           "slug": "xl"
         },
         {
           "name": "2xl",
-          "size": "3.275rem",
+          "size": "2.875rem",
           "slug": "2xl"
+        },
+        {
+          "name": "3xl",
+          "size": "3.275rem",
+          "slug": "3xl"
+        },
+        {
+          "name": "4xl",
+          "size": "4.313rem",
+          "slug": "4xl"
         }
       ],
       "fontFamilies": [

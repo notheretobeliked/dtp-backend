@@ -97,7 +97,7 @@ class HomePageSection extends Block
      * @var array
      */
     public $supports = [
-        'align' => true,
+        'align' => ['left', 'center', 'right', 'wide', 'full'],  // specify allowed alignments
         'align_text' => false,
         'align_content' => false,
         'full_height' => false,
@@ -149,6 +149,11 @@ class HomePageSection extends Block
         $homePageSection = Builder::make('home_page_section');
 
         $homePageSection
+            ->addPostObject('link', [
+                'post_type' => 'page',
+                'return_format' => 'id',
+            ])
+
             ->addGallery('images');
 
         return $homePageSection->build();

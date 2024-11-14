@@ -675,7 +675,7 @@ add_action('admin_menu', function () {
                 ?>
             </form>
         </div>
-<?php
+    <?php
         }
     );
 });
@@ -702,7 +702,7 @@ add_action('admin_init', function () {
     );
 });
 
-add_action('admin_bar_menu', function($wp_admin_bar) {
+add_action('admin_bar_menu', function ($wp_admin_bar) {
     if (!current_user_can('edit_posts')) {
         return;
     }
@@ -717,7 +717,7 @@ add_action('admin_bar_menu', function($wp_admin_bar) {
     ]);
 }, 100);
 
-add_action('admin_footer', function() {
+add_action('admin_footer', function () {
     ?>
     <script type="text/javascript">
         function triggerVercelDeploy() {
@@ -727,14 +727,50 @@ add_action('admin_footer', function() {
                 return;
             }
 
-            fetch(url, { method: 'POST' })
+            fetch(url, {
+                    method: 'POST'
+                })
                 .then(response => response.json())
                 .then(data => alert('Content is updating. Please wait for a minute or two before reloading the DTP webpage.'))
                 .catch(error => alert('Error triggering deploy: ' + error));
         }
     </script>
-    <?php
+<?php
 });
+
+add_filter('preview_post_link',  function ($preview_link, $post) {
+    $frontend_url = 'http://localhost:5173';  // Replace with your SvelteKit app URL
+    return add_query_arg(
+        array(
+            'preview_id' => $post->ID,
+            '_wpnonce' => wp_create_nonce('wp_rest'),
+        ),
+        $frontend_url . '/preview'
+    );
+}, 10, 2);
+
+add_filter('graphql_jwt_auth_secret_key', function () {
+    return 'f6d1bf03-d6b6-4f50-a0da-a2bd8358d29c';
+});
+
+// Enable preview support
+add_filter('graphql_page_object_connection_query_args', function ($query_args) {
+    if (isset($_GET['preview']) && $_GET['preview'] === 'true') {
+        $query_args['post_status'] = ['publish', 'draft', 'auto-draft'];
+    }
+    return $query_args;
+});
+
+add_filter('graphql_preview_post_status', function ($statuses) {
+    return array_merge($statuses, array('draft', 'auto-draft'));
+});
+
+add_filter('graphql_request_results', function ($response, $schema, $operation) {
+    if (isset($_GET['preview']) && $_GET['preview'] === 'true') {
+        header('X-WP-Nonce: ' . wp_create_nonce('wp_rest'));
+    }
+    return $response;
+}, 10, 3);
 
 
 /**
@@ -795,6 +831,7 @@ add_action('after_setup_theme', function () {
     add_action('init', function () {
         add_image_size('x_large', 0, 2000, 0); // 9999 means unlimited width
     });
+
 
 
 
@@ -1013,3 +1050,23 @@ add_action('widgets_init', function () {
 
 //     return isset($taxonomy_map[$acf_field]) ? $taxonomy_map[$acf_field] : null;
 // }
+
+// Try to intercept before WPGraphQL processes the block type
+add_filter('register_block_type_args', function($args, $name) {
+    if (isset($args['attributes']['align'])) {
+        $args['attributes']['align'] = [
+            'type' => 'string',
+            'default' => null,
+            '__experimentalRole' => 'content',
+            'source' => 'attribute',
+            'selector' => '[class*="align"]',
+            'extractValue' => function($value) {
+                if (preg_match('/align(full|wide|left|right|center)/', $value, $matches)) {
+                    return $matches[1];
+                }
+                return null;
+            }
+        ];
+    }
+    return $args;
+}, 20, 2);

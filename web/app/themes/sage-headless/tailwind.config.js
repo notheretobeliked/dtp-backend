@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./src/**/*.{html,js,svelte,ts}'],
+  content: [
+    './src/**/*.{html,js,svelte,ts}',
+    './resources/views/**/*.blade.php', //
+    './resources/views/**/*.php', // This will include all php files
+  ],
   safelist: [
     '!mb-0',
     'md:grid-cols-2',
@@ -40,12 +44,14 @@ export default {
       sand: '#DEC68C',
     },
     fontSize: {
-      xs: '.875rem',
-      sm: ['1rem', '1.25'],
-      base: ['1.25rem', '1.35'],
-      lg: ['1.75rem', '1.25'],
-      xl: ['2.875rem', '1.2'],
-      '2xl': ['3.275rem', '1.2'],
+      xs: '.5rem',
+      sm: ['0.875rem', '1.138rem'],
+      base: ['1.063rem', '1.438rem'],
+      lg: ['1.5rem', '1.05'],
+      xl: ['2.5rem', '1.05'],
+      '2xl': ['2.875rem', '1.2'],
+      '3xl': ['3.275rem', '1.2'],
+      '4xl': ['4.313rem', '1.2'],
     },
     screens: {
       sm: '640px',

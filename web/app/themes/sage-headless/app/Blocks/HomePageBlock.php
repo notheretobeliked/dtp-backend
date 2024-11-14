@@ -97,7 +97,7 @@ class HomePageBlock extends Block
      * @var array
      */
     public $supports = [
-        'align' => true,
+        'align' => ['left', 'center', 'right', 'wide', 'full'],  // specify allowed alignments
         'align_text' => false,
         'align_content' => false,
         'full_height' => false,
