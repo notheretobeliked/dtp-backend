@@ -24,13 +24,6 @@
                         <div class="item">
                           {!! wp_get_attachment_image($image['ID'], 'thumbnail') !!}
                           <div class="reference">{{ $image['reference'] }}</div>
-                          <div class="reference">{{ $image['filename'] }}</div>
-                          
-                          @if($image['book'])
-                            <div class="book">
-                              <h3>{{ $image['book']->post_title }}</h3>
-                            </div>
-                          @endif
                         </div>
                       @endforeach
                     </div>

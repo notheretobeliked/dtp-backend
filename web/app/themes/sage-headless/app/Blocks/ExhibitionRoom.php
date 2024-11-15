@@ -217,6 +217,7 @@ class ExhibitionRoom extends Block
                     'miniatures' => 'Miniatures',
                     'organic' => 'Organic Layout',
                     'centered' => 'Centered',
+                    'animation' => 'Animation',
                 ],
             ])
             ->addGallery('images')
@@ -235,10 +236,9 @@ class ExhibitionRoom extends Block
             $filename = basename($filename);
 
             // Pattern matches: XZZZ, X is letter, ZZZ is 3 digits, optional 'c' suffix
-            if (preg_match('/([a-z]\d{3}[a-z]?)/i', $filename, $matches)) {
+            if (preg_match('/_([a-z]\d{3})[^0-9]*/i', $filename, $matches)) {
                 return strtoupper($matches[1]);
             }
-
             return null;
         } catch (\Exception $e) {
             error_log('Error in extractBookReference: ' . $e->getMessage());
@@ -258,19 +258,7 @@ class ExhibitionRoom extends Block
                         // Extract book reference from filename
                         $reference = $this->extractBookReference($image['filename']);
                         $filename = $image['filename'];
-
-                        // If reference found, get corresponding book
-                        if ($reference) {
-                            // Query for book post by slug
-                            $books = get_posts([
-                                'post_type' => 'book',
-                                'name' => strtolower($reference),
-                                'posts_per_page' => 1
-                            ]);
-
-                            $image['book'] = !empty($books) ? $books[0] : null;
-                            $image['reference'] = $reference;
-                        }
+                        if ($reference) $image['reference'] = $reference;
 
                         return $image;
                     }, $group['images']);
