@@ -221,6 +221,11 @@ class ExhibitionRoom extends Block
                 ],
             ])
             ->addGallery('images')
+            ->addTrueFalse('shadow', [
+                'ui' => 1,
+                'label' => 'Drop shadow?',
+                'default_value' => 1
+            ])
             ->endRepeater()
             ->endRepeater();
 
