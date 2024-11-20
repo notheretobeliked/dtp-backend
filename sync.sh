@@ -33,7 +33,7 @@ read -r -p "Sync the uploads folder? [y/N] " uploads
 
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
   echo "Exporting $TO db" &&
-  wp "@$TO" db export $TO-backup.sql --path=web/wp &&
+  wp "@$TO" db export "${TO}-backup-$(date +%Y%m%d_%H%M%S).sql" --path=web/wp &&
   echo "Resetting $TO db" &&
   wp "@$TO" db reset --yes --path=web/wp &&
     # echo "Exporting $FROM db" &&
