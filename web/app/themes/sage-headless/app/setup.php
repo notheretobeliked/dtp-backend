@@ -1051,6 +1051,26 @@ add_action('widgets_init', function () {
 //     return isset($taxonomy_map[$acf_field]) ? $taxonomy_map[$acf_field] : null;
 // }
 
+add_filter('register_post_type_args', function ($args, $post_type) {
+    if ($post_type === 'post') {
+        $args['labels'] = [
+            'name' => 'Learning Hub Posts',
+            'singular_name' => 'Learning Hub Post',
+            'add_new' => 'Add New',
+            'add_new_item' => 'Add New Learning Hub Post',
+            'edit_item' => 'Edit Learning Hub Post',
+            'new_item' => 'New Learning Hub Post',
+            'view_item' => 'View Learning Hub Post',
+            'search_items' => 'Search Learning Hub Posts',
+            'not_found' => 'No Learning Hub posts found',
+            'not_found_in_trash' => 'No Learning Hub posts found in trash',
+            'all_items' => 'All Learning Hub Posts',
+            'menu_name' => 'Learning Hub Posts',
+        ];
+    }
+    return $args;
+}, 10, 2);
+
 // Try to intercept before WPGraphQL processes the block type
 add_filter('register_block_type_args', function($args, $name) {
     if (isset($args['attributes']['align'])) {
