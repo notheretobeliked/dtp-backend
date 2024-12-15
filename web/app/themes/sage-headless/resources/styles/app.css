@@ -19,8 +19,13 @@ ol {
   @apply font-martina text-base;
 }
 
+ol { @apply list-decimal }
 p {
   @apply mb-3;
+}
+
+p a {
+	@apply border-dotted border-b-blue border-b hover:text-blue;
 }
 
 h1 {

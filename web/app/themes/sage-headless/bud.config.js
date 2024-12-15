@@ -71,7 +71,7 @@ export default async (app) => {
         units: ['px', '%', 'em', 'rem', 'vw', 'vh'],
       },
       layout: {
-        contentSize: '908px',
+        contentSize: '668px',
         wideSize: '1380px',
       },
       typography: {
