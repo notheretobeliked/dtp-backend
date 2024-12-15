@@ -22,6 +22,10 @@ return [
             'supports' => ['title', 'revisions', 'thumbnail'],
             'show_in_rest' => true,
             'has_archive' => false,
+            'rewrite' => [
+                'slug' => 'library',
+                'with_front' => false,
+            ],
             'labels' => [
                 'singular' => 'Book',
                 'plural' => 'Books',
