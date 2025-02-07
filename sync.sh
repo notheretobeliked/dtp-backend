@@ -43,7 +43,7 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
   echo "Exporting db from @$FROM to @$TO" &&
   wp "@$FROM" db export --path=web/wp - > ./temp_export_import.sql &&
     # Remove the problematic MariaDB line
-  sed -i '' '/\/\*M!999999\\- enable the sandbox mode \*\//d' ./temp_export_import.sql
+  sed -i '' '/\/\*!999999\\- enable the sandbox mode \*\//d' ./temp_export_import.sql
 
   # wp "@$TO" db import ./temp_export_import.sql --path=web/wp &&
   # if (( "$FROM" == "stagingcontenu")) 

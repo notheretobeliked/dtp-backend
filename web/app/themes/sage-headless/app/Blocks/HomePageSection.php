@@ -149,9 +149,7 @@ class HomePageSection extends Block
         $homePageSection = Builder::make('home_page_section');
 
         $homePageSection
-            ->addPostObject('link', [
-                'post_type' => 'page',
-                'return_format' => 'id',
+            ->addLink('link', [
             ])
 
             ->addGallery('images');
