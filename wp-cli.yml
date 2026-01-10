@@ -5,4 +5,7 @@ server:
 @staging:
   ssh: cleavr@dtp-stg.nhtbl.studio:/home/cleavr/dtp-stg.nhtbl.studio/current
 
+@prod:
+  ssh: cleavr@api.decolonizingthepage.com:/home/cleavr/api.decolonizingthepage.com/current
+
 @dev: ''

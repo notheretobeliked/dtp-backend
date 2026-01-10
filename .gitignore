@@ -4,6 +4,8 @@ web/app/plugins/*
 web/app/mu-plugins/*/
 web/app/themes/twentytwentyfour/
 web/app/upgrade
+web/app/languages
+web/app/themes/sage-headless/.yarn/install-state.gz
 web/app/uploads/*
 !web/app/uploads/.gitkeep
 web/app/cache/*

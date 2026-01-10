@@ -4,8 +4,8 @@
 DEVDIR="web/app/uploads/"
 DEVSITE="dtp-backend.test"
 
-#PRODDIR="cleavr@decolonisethepage.com:/home/forge/www.cactuslabs.org/shared/uploads/"
-#PRODSITE="www.decolonisethepage.com"
+PRODDIR="cleavr@api.decolonizingthepage.com:/home/cleavr/api.decolonizingthepage.com/shared/uploads/"
+PRODSITE="api.decolonizingthepage.com"
 
 # STAGDIR="forge@185.53.57.106:/home/forge/villa-arson-prototype.sans.website/current"
 STAGDIR="cleavr@dtp-stg.nhtbl.studio:/home/cleavr/dtp-stg.nhtbl.studio/shared/uploads/"
@@ -16,10 +16,10 @@ FROM=$1
 TO=$2
 
 case "$1-$2" in
-  # dev-prod) DIR="up";  FROMSITE=$DEVSITE;  FROMDIR=$DEVDIR;  TOSITE=$PRODSITE; TODIR=$PRODDIR; ;;
+  dev-prod) DIR="up";  FROMSITE=$DEVSITE;  FROMDIR=$DEVDIR;  TOSITE=$PRODSITE; TODIR=$PRODDIR; ;;
   dev-staging)    DIR="up"   FROMSITE=$DEVSITE;  FROMDIR=$DEVDIR;  TOSITE=$STAGSITE; TODIR=$STAGDIR; ;;
   # dev-stagingcontenu)    DIR="up"   FROMSITE=$DEVSITE;  FROMDIR=$DEVDIR;  TOSITE=$STAGCONTSITE; TODIR=$STAGCONTDIR; ;;
-  # prod-dev) DIR="down" FROMSITE=$PRODSITE; FROMDIR=$PRODDIR; TOSITE=$DEVSITE;  TODIR=$DEVDIR; ;;
+  prod-dev) DIR="down" FROMSITE=$PRODSITE; FROMDIR=$PRODDIR; TOSITE=$DEVSITE;  TODIR=$DEVDIR; ;;
   # dev-remotedev)    DIR="up"   FROMSITE=$DEVSITE;  FROMDIR=$DEVDIR;  TOSITE=$REMOTEDEVSITE; TODIR=$REMOTEDEVDIR; ;;
   # remotedev-dev)    DIR="down"   FROMSITE=$REMOTEDEVSITE;  FROMDIR=$REMOTEDEVDIR;  TOSITE=$DEVSITE; TODIR=$DEVDIR; ;;
   staging-dev)    DIR="down" FROMSITE=$STAGSITE; FROMDIR=$STAGDIR; TOSITE=$DEVSITE;  TODIR=$DEVDIR; ;;
