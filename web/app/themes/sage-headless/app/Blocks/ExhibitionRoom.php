@@ -249,7 +249,7 @@ class ExhibitionRoom extends Block
              * Match "_" + 1-3 letters + 3 digits, allow (but ignore) one trailing letter,
              * and ensure the next character is not a digit (so we don't match into longer numbers).
              */
-            if (preg_match('/_([a-z]{1,3}\d{3})(?:[a-z])?(?!\d)/i', $filename, $matches)) {
+            if (preg_match('/(?:^|[_-])([a-z]{1,3}\d{3})(?:[a-z])?(?!\d)/i', $filename, $matches)) {
                 return strtoupper($matches[1]);
             }
             return null;
