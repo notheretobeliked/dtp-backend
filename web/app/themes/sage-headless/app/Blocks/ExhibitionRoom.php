@@ -240,8 +240,15 @@ class ExhibitionRoom extends Block
             // Remove file extension and path
             $filename = basename($filename);
 
-            // Pattern matches: XZZZ, X is letter, ZZZ is 3 digits, optional 'c' suffix
-            if (preg_match('/_([a-z]\d{3})[^0-9]*/i', $filename, $matches)) {
+            /**
+             * Extract book reference from filenames like:
+             * - 01_MK001_6.webp  => MK001
+             * - 01_M001c_2.jpg   => M001C (optional "c" suffix)
+             *
+             * We look for an underscore followed by 1-3 letters + 3 digits + optional "c",
+             * and require a non-alphanumeric boundary (underscore, dot, end, etc) after.
+             */
+            if (preg_match('/_([a-z]{1,3}\d{3}c?)(?:[^a-z0-9]|$)/i', $filename, $matches)) {
                 return strtoupper($matches[1]);
             }
             return null;
