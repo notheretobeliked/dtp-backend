@@ -242,13 +242,14 @@ class ExhibitionRoom extends Block
 
             /**
              * Extract book reference from filenames like:
-             * - 01_MK001_6.webp  => MK001
-             * - 01_M001c_2.jpg   => M001C (optional "c" suffix)
+             * - 01_MK001_6.webp   => MK001
+             * - 05_A006.webp      => A006
+             * - 05_A828c.webp     => A828 (ignore trailing non-numeric suffix like "c")
              *
-             * We look for an underscore followed by 1-3 letters + 3 digits + optional "c",
-             * and require a non-alphanumeric boundary (underscore, dot, end, etc) after.
+             * Match "_" + 1-3 letters + 3 digits, allow (but ignore) one trailing letter,
+             * and ensure the next character is not a digit (so we don't match into longer numbers).
              */
-            if (preg_match('/_([a-z]{1,3}\d{3}c?)(?:[^a-z0-9]|$)/i', $filename, $matches)) {
+            if (preg_match('/_([a-z]{1,3}\d{3})(?:[a-z])?(?!\d)/i', $filename, $matches)) {
                 return strtoupper($matches[1]);
             }
             return null;
