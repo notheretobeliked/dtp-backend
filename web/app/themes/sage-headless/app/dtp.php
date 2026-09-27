@@ -199,3 +199,26 @@ add_filter('graphql_object_fields', function ($fields, $type_name) {
 
     return $fields;
 }, 10, 2);
+
+/**
+ * Keep ACF link/URL field values exactly as stored.
+ *
+ * ACFML 5 hooks acf/load_value for link and url fields and rewrites them to the
+ * translated post's absolute permalink (LinkUrlLoadHooks, not configurable).
+ * DTP stores frontend-relative paths ("/en/beyond-words") that the SvelteKit
+ * frontend uses as-is, so the rewrite breaks every Home Page Section link — and
+ * because it also runs in the editor, saving a block would persist the absolute
+ * backend URL. Unhook it once ACFML has registered it.
+ */
+add_action('init', function () {
+    foreach (['acf/load_value/type=link', 'acf/load_value/type=url'] as $hook) {
+        foreach ($GLOBALS['wp_filter'][$hook]->callbacks ?? [] as $priority => $callbacks) {
+            foreach ($callbacks as $callback) {
+                $fn = $callback['function'];
+                if (is_array($fn) && $fn[0] instanceof \ACFML\Field\LinkUrlLoadHooks) {
+                    remove_filter($hook, $fn, $priority);
+                }
+            }
+        }
+    }
+}, 999);
