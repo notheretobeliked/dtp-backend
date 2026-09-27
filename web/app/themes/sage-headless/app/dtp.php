@@ -14,10 +14,12 @@ use function Roots\asset;
 /**
  * Load DTP's editor stylesheet into the block editor (the template loads
  * app.css via add_editor_style and the editor bundle JS-only).
+ *
+ * Registered immediately, not on after_setup_theme, so it comes BEFORE the
+ * template's app.css: editor.css starts with Tailwind's preflight, which would
+ * otherwise reset app.css's typography (paragraph margins, heading sizes).
  */
-add_action('after_setup_theme', function () {
-    add_editor_style(asset('editor.css')->relativePath(get_theme_file_path()));
-}, 21);
+add_editor_style(asset('editor.css')->relativePath(get_theme_file_path()));
 
 /**
  * Allow this project's ACF blocks (and the core blocks its content uses) in
